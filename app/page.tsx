@@ -19,17 +19,31 @@ export default async function Home() {
   const destinations: DestinationItem[] = JSON.parse(JSON.stringify(rawData));
 
   async function addDestination(formData: FormData) {
-    "use server ";
+    "use server";
     await dbConnect();
 
-    const title = String(formData.get("title") || "").trim();
-    const location = String(formData.get("location") || "").trim();
-    const imageUrl = String(formData.get("imageUrl") || "").trim();
-    const description = String(formData.get("description") || "").trim();
+    const title = formData.get("title");
+    const location = formData.get("location");
+    const imageUrl = formData.get("imageUrl");
+    const description = formData.get("description");
 
-    if (!title || location || !imageUrl || !description) return;
+    // TypeScript type guard: guarantees all inputs are valid strings
+    if (
+      typeof title !== "string" ||
+      typeof location !== "string" ||
+      typeof imageUrl !== "string" ||
+      typeof description !== "string"
+    ) {
+      return;
+    }
 
-    await Destination.create({ title, location, imageUrl, description });
+    await Destination.create({
+      title: title.trim(),
+      location: location.trim(),
+      imageUrl: imageUrl.trim(),
+      description: description.trim(),
+    });
+
     revalidatePath("/");
   }
 
@@ -77,7 +91,7 @@ export default async function Home() {
           />
           <button
             type="submit"
-            className="md:col-span-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-lg transition"
+            className="md:col-span-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-lg transition cursor-pointer"
           >
             Add Destination
           </button>
