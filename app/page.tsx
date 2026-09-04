@@ -19,15 +19,15 @@ export default async function Home() {
   const destinations: DestinationItem[] = JSON.parse(JSON.stringify(rawData));
 
   async function addDestination(formData: FormData) {
-    "use server";
-    await dbConnect();  
+    "use server ";
+    await dbConnect();
 
-    const title = formData.get("title");
-    const location = formData.get("location");
-    const imageUrl = formData.get("imageUrl");
-    const description = formData.get("description");
+    const title = String(formData.get("title") || "").trim();
+    const location = String(formData.get("location") || "").trim();
+    const imageUrl = String(formData.get("imageUrl") || "").trim();
+    const description = String(formData.get("description") || "").trim();
 
-    if (!title || !location || !imageUrl || !description) return;
+    if (!title || location || !imageUrl || !description) return;
 
     await Destination.create({ title, location, imageUrl, description });
     revalidatePath("/");
